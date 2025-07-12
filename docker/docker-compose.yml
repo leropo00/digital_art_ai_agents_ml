@@ -1,0 +1,22 @@
+services:
+  vector_database:
+    image: ankane/pgvector:v0.4.1
+    container_name: pgvector
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - digital_art_db_data:/var/lib/postgresql/data
+    networks:
+      - digital_art_network
+    restart: unless-stopped
+
+networks:
+  digital_art_network:
+    driver: bridge
+
+volumes:
+  digital_art_db_data:
