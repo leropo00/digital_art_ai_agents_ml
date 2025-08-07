@@ -17,6 +17,7 @@ services:
 networks:
   digital_art_network:
     driver: bridge
+    name: digital_art_ml_ai_network
 
 volumes:
   digital_art_db_data:
