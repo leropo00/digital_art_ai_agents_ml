@@ -3,19 +3,18 @@ from sqlalchemy import DateTime, func
 from sqlalchemy.orm import  Mapped, mapped_column
 
 class TimestampMixin():
-    
+    # logic is handled on python side    
     created_at: Mapped[datetime] = mapped_column(
         default=datetime.utcnow
     )
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.utcnow,
-        onupdate=datetime.utcnow
+        onupdate=datetime.utcnow,
     )
-    # Automatically inserted on create
+    # logic is handled in the database
     #created_at: Mapped[datetime] = mapped_column(
     #    DateTime, nullable=False, server_default=func.now()
     #)
-    # Automatically inserted on create and updated on update
     #updated_at: Mapped[datetime] = mapped_column(
     #    DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
     #)
