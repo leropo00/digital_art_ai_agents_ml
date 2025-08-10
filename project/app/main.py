@@ -1,6 +1,8 @@
-from fastapi import FastAPI
-from .router import router as process_router
+from fastapi import APIRouter, FastAPI
+from .endpoints.art_ideas import router as router_ideas
 
+router = APIRouter()
+router.include_router(router_ideas)
 
 """
 command to run
@@ -15,4 +17,4 @@ http://127.0.0.1:8000/docs
 """
 
 app = FastAPI()
-app.include_router(process_router)
+app.include_router(router)

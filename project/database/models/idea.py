@@ -1,5 +1,7 @@
 from datetime import datetime
 from enum import Enum
+from fastapi import HTTPException
+
 from sqlalchemy import Integer, String, Enum as SqlEnum
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -28,3 +30,5 @@ class ArtIdea(Base, TimestampMixin):
     inital_idea: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     # this field will be used to comvert to vectore embeddings
     final_description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    
+    
