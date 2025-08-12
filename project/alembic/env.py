@@ -7,7 +7,7 @@ from alembic import context
 from project.database.base import Base
 
 ### here all the models that are tracked by alembic will be added ###
-from  project.database.models.idea import ArtIdea
+from project.database.models.idea import ArtIdea
 ### here all the models that are tracked by alembic will be added ###
 
 # this is the Alembic Config object, which provides
@@ -69,9 +69,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

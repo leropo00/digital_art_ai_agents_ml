@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from project.database.models.idea import IdeaType
 
+
 class ArtIdeaResponse(BaseModel):
     id: int
     identifier_name: str

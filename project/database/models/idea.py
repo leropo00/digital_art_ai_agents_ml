@@ -9,12 +9,14 @@ from typing import Optional
 from ..base import Base
 from ..mixins import TimestampMixin
 
+
 class IdeaType(Enum):
     # painting like, only image is important
     IMAGE = "image"
-    # caption is also part of an image, for tshirt with images 
+    # caption is also part of an image, for tshirt with images
     IMAGE_WITH_CAPTION = "image_with_caption"
     CAPTION_ONLY = "caption_only"
+
 
 class ArtIdea(Base, TimestampMixin):
     __tablename__ = "art_idea"
@@ -30,5 +32,3 @@ class ArtIdea(Base, TimestampMixin):
     inital_idea: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     # this field will be used to comvert to vectore embeddings
     final_description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    
-    
