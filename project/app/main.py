@@ -1,4 +1,5 @@
 from fastapi import APIRouter, FastAPI
+
 from .endpoints.art_ideas import router as router_ideas
 
 router = APIRouter()

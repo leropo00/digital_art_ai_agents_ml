@@ -1,7 +1,9 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 from openai import OpenAI
-from ..models.external_models import gpt4o, o4_mini
+
+from ..models.external_models import o4_mini
 
 
 def main():

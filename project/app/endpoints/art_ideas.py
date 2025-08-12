@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
 import json
 from http import HTTPStatus
-from project.database.session import get_db
-from project.database.models.idea import ArtIdea
-from project.database.schema.idea import ArtIdeaResponse, ArtIdeaCreate
-
-from starlette.responses import Response
-from sqlalchemy.orm import Session
 from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from starlette.responses import Response
+
+from project.database.models.idea import ArtIdea
+from project.database.schema.idea import ArtIdeaCreate, ArtIdeaResponse
+from project.database.session import get_db
 
 router = APIRouter(
     prefix="/art_ideas",

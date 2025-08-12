@@ -1,11 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from fastapi import HTTPException
-
-from sqlalchemy import Integer, String, Enum as SqlEnum
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
 from typing import Optional
+
+from fastapi import HTTPException
+from sqlalchemy import Enum as SqlEnum
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
+
 from ..base import Base
 from ..mixins import TimestampMixin
 
