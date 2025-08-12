@@ -33,8 +33,6 @@ def create_idea(
         data: ArtIdeaCreate,
         db: Session = Depends(get_db),
     ):
-    print(data)
-    
     db_item = ArtIdea(identifier_name=data.identifier_name,
                       idea_type= data.idea_type,
                       slug=data.identifier_name.lower(), 
