@@ -1,11 +1,9 @@
-import json
 from http import HTTPStatus
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.responses import Response
 
 from project.database.models.idea import ArtIdea
 from project.database.schema.idea import ArtIdeaCreate, ArtIdeaResponse
