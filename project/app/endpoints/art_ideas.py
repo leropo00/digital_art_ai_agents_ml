@@ -3,7 +3,8 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import Response
 
 from project.database.models.idea import ArtIdea
@@ -18,25 +19,27 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[ArtIdeaResponse])
-def all_ideas(db: Session = Depends(get_db)):
-    return db.query(ArtIdea).all()
+async def all_ideas(db: AsyncSession = Depends(get_db)):
+    return await db.scalars(select(ArtIdea))
 
 
 @router.get("/{idea_id}", response_model=ArtIdeaResponse)
-def get_idea(
+async def get_idea(
     idea_id: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
-    res = db.query(ArtIdea).filter(ArtIdea.id == idea_id).first()
-    if not res:
+    result = (
+        await db.execute(select(ArtIdea).filter(ArtIdea.id == idea_id))
+    ).scalar_one_or_none()
+    if not result:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Idea not found")
-    return res
+    return result
 
 
 @router.post("/")
-def create_idea(
+async def create_idea(
     data: ArtIdeaCreate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     db_item = ArtIdea(
         identifier_name=data.identifier_name,
@@ -46,6 +49,6 @@ def create_idea(
         final_description=data.final_description,
     )
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    await db.commit()
+    await db.refresh(db_item)
     return db_item
