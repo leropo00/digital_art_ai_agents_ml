@@ -45,7 +45,7 @@ class ArtIdea(Base, TimestampMixin):
     # this field will be used to convert to vectore embeddings
     final_description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
-    titles: Mapped[List["ArtTitle"]] = relationship(back_populates="art_idea")
+    titles: Mapped[List["ArtIdeaTitle"]] = relationship(back_populates="art_idea")
     questions: Mapped[List["ArtIdeaQuestion"]] = relationship(back_populates="art_idea")
     reference_material: Mapped[List["ReferenceMaterial"]] = relationship(
         secondary="art_idea_references",
@@ -53,7 +53,7 @@ class ArtIdea(Base, TimestampMixin):
     )
 
 
-class ArtTitle(Base, TimestampMixin):
+class ArtIdeaTitle(Base, TimestampMixin):
     __tablename__ = "art_idea_title"
 
     id: Mapped[int] = mapped_column(primary_key=True)
