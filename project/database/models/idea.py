@@ -1,9 +1,8 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
 
-from sqlalchemy import Enum as SqlEnum
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, Enum as SqlEnum, ForeignKey, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from ..base import Base
@@ -37,28 +36,31 @@ class ArtIdea(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     identifier_name: Mapped[str] = mapped_column(String, unique=True)
-    slug: Mapped[str] = mapped_column(String, unique=True)
-
     idea_type: Mapped[IdeaType] = mapped_column(
         SqlEnum(IdeaType, name="idea_type", native_enum=True), nullable=False
     )
 
+    slug: Mapped[str] = mapped_column(String, unique=True)
     inital_idea: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    # this field will be used to comvert to vectore embeddings
+    # this field will be used to convert to vectore embeddings
     final_description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     titles: Mapped[List["ArtTitle"]] = relationship(back_populates="art_idea")
     questions: Mapped[List["ArtIdeaQuestion"]] = relationship(back_populates="art_idea")
+    reference_material: Mapped[List["ReferenceMaterial"]] = relationship(
+        secondary="art_idea_references",
+        back_populates="art_ideas",
+    )
 
 
 class ArtTitle(Base, TimestampMixin):
     __tablename__ = "art_idea_title"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    title_text: Mapped[str] = mapped_column(String)
     title_type: Mapped[TitleType] = mapped_column(
         SqlEnum(TitleType, name="art_title_type", native_enum=True), nullable=False
     )
-    title_text: Mapped[str] = mapped_column(String)
 
     art_idea_id: Mapped[int] = mapped_column(ForeignKey("art_idea.id"))
     art_idea: Mapped["ArtIdea"] = relationship("ArtIdea", back_populates="titles")
@@ -68,6 +70,7 @@ class ArtIdeaQuestion(Base, TimestampMixin):
     __tablename__ = "art_idea_question"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+
     question_text: Mapped[str] = mapped_column(String)
     solved_date: Mapped[datetime] = mapped_column(
         DateTime,
@@ -76,3 +79,15 @@ class ArtIdeaQuestion(Base, TimestampMixin):
 
     art_idea_id: Mapped[int] = mapped_column(ForeignKey("art_idea.id"))
     art_idea: Mapped["ArtIdea"] = relationship("ArtIdea", back_populates="questions")
+
+
+class ArtIdeaReferences(Base, TimestampMixin):
+    __tablename__ = "art_idea_references"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    art_idea_id: Mapped[int] = mapped_column(ForeignKey("art_idea.id"))
+    reference_material_id: Mapped[int] = mapped_column(
+        ForeignKey("reference_material.id")
+    )
+
+    reference_usage: Mapped[Optional[str]] = mapped_column(String, nullable=True)

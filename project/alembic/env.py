@@ -11,6 +11,7 @@ from project.database.base import Base
 
 ### here all the models that are tracked by alembic will be added ###
 from project.database.models.idea import ArtIdea, ArtTitle, ArtIdeaQuestion  # noqa: F401
+from project.database.models.reference import ReferenceMaterial, ReferenceStorage  # noqa: F401
 ### here all the models that are tracked by alembic will be added ###
 
 # this is the Alembic Config object, which provides
