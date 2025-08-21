@@ -36,7 +36,8 @@ class ReferenceMaterial(Base, TimestampMixin):
     description: Mapped[str] = mapped_column(String)
 
     storage: Mapped[List["ReferenceStorage"]] = relationship(
-        back_populates="reference_material"
+        back_populates="reference_material",
+        cascade="all, delete",
     )
     art_ideas: Mapped[List["ArtIdea"]] = relationship(
         secondary="art_idea_references",
