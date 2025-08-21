@@ -91,3 +91,7 @@ class ArtIdeaReferences(Base, TimestampMixin):
     )
 
     reference_usage: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+
+
+# import at bottom as workaround against circular dependencies
+from .reference import ReferenceMaterial

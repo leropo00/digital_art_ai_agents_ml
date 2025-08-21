@@ -61,3 +61,7 @@ class ReferenceStorage(Base, TimestampMixin):
     reference_material: Mapped["ReferenceMaterial"] = relationship(
         "ReferenceMaterial", back_populates="storage"
     )
+
+
+# import at bottom as workaround against circular dependencies
+from .idea import ArtIdea
