@@ -4,9 +4,11 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .endpoints.art_ideas import router as router_ideas
+from .endpoints.reference_material import router as router_reference
 
 router = APIRouter()
 router.include_router(router_ideas)
+router.include_router(router_reference)
 
 """
 command to run
