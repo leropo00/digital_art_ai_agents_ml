@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional, List
 
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy import Integer, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from ..base import Base
@@ -48,6 +48,7 @@ class ArtIdea(Base, TimestampMixin):
     final_description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     titles: Mapped[List["ArtTitle"]] = relationship(back_populates="art_idea")
+    questions: Mapped[List["ArtIdeaQuestion"]] = relationship(back_populates="art_idea")
 
 
 class ArtTitle(Base, TimestampMixin):
@@ -61,3 +62,17 @@ class ArtTitle(Base, TimestampMixin):
 
     art_idea_id: Mapped[int] = mapped_column(ForeignKey("art_idea.id"))
     art_idea: Mapped["ArtIdea"] = relationship("ArtIdea", back_populates="titles")
+
+
+class ArtIdeaQuestion(Base, TimestampMixin):
+    __tablename__ = "art_idea_question"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    question_text: Mapped[str] = mapped_column(String)
+    solved_date: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
+    art_idea_id: Mapped[int] = mapped_column(ForeignKey("art_idea.id"))
+    art_idea: Mapped["ArtIdea"] = relationship("ArtIdea", back_populates="questions")

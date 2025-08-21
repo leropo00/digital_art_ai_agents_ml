@@ -1,14 +1,18 @@
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, timezone
 
+from sqlalchemy import DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 
 
 class TimestampMixin:
     # logic is handled on python side
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.now(timezone.utc)
+    )
     updated_at: Mapped[datetime] = mapped_column(
-        default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc)
+        DateTime,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
     )
     # logic is handled in the database
     # created_at: Mapped[datetime] = mapped_column(
