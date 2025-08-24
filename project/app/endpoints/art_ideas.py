@@ -68,7 +68,7 @@ async def create_idea(
         idea_type=data.idea_type,
         # TODO create a slug function
         slug=data.identifier_name.lower(),
-        inital_idea=data.inital_idea,
+        initial_idea=data.initial_idea,
         final_description=data.final_description,
     )
     db.add(db_item)

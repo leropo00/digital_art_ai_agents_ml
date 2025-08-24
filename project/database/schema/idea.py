@@ -9,14 +9,14 @@ class ArtIdeaResponse(BaseModel):
     identifier_name: str
     slug: str
     idea_type: IdeaType
-    inital_idea: Optional[str]
+    initial_idea: Optional[str]
     final_description: Optional[str]
 
 
 class ArtIdeaCreate(BaseModel):
     identifier_name: str
     idea_type: IdeaType
-    inital_idea: Optional[str]
+    initial_idea: Optional[str]
     final_description: Optional[str]
 
 

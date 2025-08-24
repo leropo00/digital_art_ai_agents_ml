@@ -41,7 +41,7 @@ class ArtIdea(Base, TimestampMixin):
     )
 
     slug: Mapped[str] = mapped_column(String, unique=True)
-    inital_idea: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    initial_idea: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     # this field will be used to convert to vectore embeddings
     final_description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
