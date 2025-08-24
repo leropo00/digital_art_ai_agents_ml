@@ -24,7 +24,7 @@ class ReferenceMaterial(Base, TimestampMixin):
     __tablename__ = "reference_material"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    idea_type: Mapped[ReferenceMaterialType] = mapped_column(
+    reference_material_type: Mapped[ReferenceMaterialType] = mapped_column(
         SqlEnum(
             ReferenceMaterialType,
             name="reference_material_type_enum",

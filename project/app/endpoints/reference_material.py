@@ -27,7 +27,7 @@ async def create_reference_material(
     db: AsyncSession = Depends(get_db),
 ):
     db_item = ReferenceMaterial(
-        idea_type=data.idea_type,
+        reference_material_type=data.reference_material_type,
         description=data.description,
     )
     if data.storage:

@@ -17,12 +17,12 @@ class ReferenceStorageResponse(BaseModel):
 
 
 class ReferenceMaterialCreate(BaseModel):
-    idea_type: ReferenceMaterialType
+    reference_material_type: ReferenceMaterialType
     description: str
     storage: Optional[List[ReferenceStorageCreate]] = None
 
 
 class ReferenceMaterialResponse(BaseModel):
     id: int
-    idea_type: ReferenceMaterialType
+    reference_material_type: ReferenceMaterialType
     description: str

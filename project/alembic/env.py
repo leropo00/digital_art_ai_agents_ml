@@ -10,7 +10,7 @@ from alembic import context
 from project.database.base import Base
 
 ### here all the models that are tracked by alembic will be added ###
-from project.database.models.idea import ArtIdea, ArtTitle, ArtIdeaQuestion  # noqa: F401
+from project.database.models.idea import ArtIdea, ArtIdeaTitle, ArtIdeaQuestion  # noqa: F401
 from project.database.models.reference import ReferenceMaterial, ReferenceStorage  # noqa: F401
 ### here all the models that are tracked by alembic will be added ###
 
