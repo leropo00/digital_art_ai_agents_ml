@@ -1,6 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, ConfigDict
+from typing import List, Optional
 from project.database.models.idea import IdeaType, TitleType
 
 
@@ -39,3 +39,8 @@ class ArtIdeaQuestionResponse(BaseModel):
 
 class ArtIdeaQuestionCreate(BaseModel):
     question_text: str
+
+
+class ArtIdeaResponseDetails(ArtIdeaResponse):
+    titles: Optional[List[ArtIdeaTitleResponse]] = None
+    questions: Optional[List[ArtIdeaQuestionResponse]] = None

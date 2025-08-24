@@ -4,6 +4,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+from sqlalchemy.sql.base import ExecutableOption
 
 from project.database.models.idea import ArtIdea, ArtIdeaTitle, ArtIdeaQuestion
 from project.database.schema.idea import (
@@ -28,16 +30,31 @@ async def all_ideas(db: AsyncSession = Depends(get_db)):
     return await db.scalars(select(ArtIdea))
 
 
-@router.get("/{idea_id}", response_model=ArtIdeaResponse)
+@router.get("/{idea_id}")
 async def get_idea(
     idea_id: int,
+    include_titles: bool = False,
+    include_questions: bool = False,
     db: AsyncSession = Depends(get_db),
 ):
-    result = (
-        await db.execute(select(ArtIdea).filter(ArtIdea.id == idea_id))
-    ).scalar_one_or_none()
+    query = select(ArtIdea).filter(ArtIdea.id == idea_id)
+    options: List[ExecutableOption] = []
+    if include_questions:
+        options.append(selectinload(ArtIdea.questions))
+
+    if include_titles:
+        options.append(selectinload(ArtIdea.titles))
+
+    if options:
+        query = query.options(*options)
+
+    result = (await db.execute(query)).scalar_one_or_none()
     if not result:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Idea not found")
+
+    # TODO for now return without pydantic serialization
+    # it seems that pydantic trigger lazy loading of unloaded relationships
+    # this triggers the following error: https://docs.sqlalchemy.org/en/14/errors.html#error-xd2s
     return result
 
 
@@ -49,6 +66,7 @@ async def create_idea(
     db_item = ArtIdea(
         identifier_name=data.identifier_name,
         idea_type=data.idea_type,
+        # TODO create a slug function
         slug=data.identifier_name.lower(),
         inital_idea=data.inital_idea,
         final_description=data.final_description,

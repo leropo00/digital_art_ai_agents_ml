@@ -15,7 +15,7 @@ from project.database.schema.reference import (
 )
 
 router = APIRouter(
-    prefix="/reference_material",
+    prefix="/reference_materials",
     tags=["Reference materials"],
     responses={HTTPStatus.NOT_FOUND: {"description": "Not found"}},
 )
@@ -44,6 +44,13 @@ async def create_reference_material(
     return db_item
 
 
+@router.get("/", response_model=List[ReferenceMaterialResponse])
+async def get_all_reference_material(
+    db: AsyncSession = Depends(get_db),
+):
+    return await db.scalars(select(ReferenceMaterial))
+
+
 @router.post("/{reference_id}/storage", response_model=ReferenceStorageResponse)
 async def create_reference_storage(
     reference_id: int,
@@ -69,3 +76,15 @@ async def create_reference_storage(
     await db.commit()
     await db.refresh(db_item)
     return db_item
+
+
+@router.get("/{reference_id}/storage", response_model=List[ReferenceStorageResponse])
+async def get_all_reference_storage(
+    reference_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    return await db.scalars(
+        select(ReferenceStorage).filter(
+            ReferenceStorage.reference_material_id == reference_id
+        )
+    )
