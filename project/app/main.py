@@ -10,21 +10,8 @@ router = APIRouter()
 router.include_router(router_ideas)
 router.include_router(router_reference)
 
-"""
-command to run
-
-cd app
-uvicorn main:app --reload
-
-swagger is avaiable at url:
-
-http://127.0.0.1:8000/docs
-
-"""
-
 app = FastAPI()
 app.include_router(router)
-
 
 origins = [
     os.getenv("FRONTEND_URL", "http://localhost:3000"),
