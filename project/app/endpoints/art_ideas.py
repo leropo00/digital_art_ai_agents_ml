@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -58,7 +58,7 @@ async def get_idea(
     return result
 
 
-@router.post("/", response_model=ArtIdeaResponse)
+@router.post("/", response_model=ArtIdeaResponse, status_code=status.HTTP_201_CREATED)
 async def create_idea(
     data: ArtIdeaCreate,
     db: AsyncSession = Depends(get_db),
@@ -77,7 +77,11 @@ async def create_idea(
     return db_item
 
 
-@router.post("/{art_idea_id}/title", response_model=ArtIdeaTitleResponse)
+@router.post(
+    "/{art_idea_id}/title",
+    response_model=ArtIdeaTitleResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_idea_title(
     art_idea_id: int,
     data: ArtIdeaTitleCreate,
@@ -100,7 +104,11 @@ async def create_idea_title(
     return db_item
 
 
-@router.post("/{art_idea_id}/question", response_model=ArtIdeaQuestionResponse)
+@router.post(
+    "/{art_idea_id}/question",
+    response_model=ArtIdeaQuestionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_idea_questions(
     art_idea_id: int,
     data: ArtIdeaQuestionCreate,

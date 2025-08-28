@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,7 +21,9 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=ReferenceMaterialResponse)
+@router.post(
+    "/", response_model=ReferenceMaterialResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_reference_material(
     data: ReferenceMaterialCreate,
     db: AsyncSession = Depends(get_db),
@@ -51,7 +53,11 @@ async def get_all_reference_material(
     return await db.scalars(select(ReferenceMaterial))
 
 
-@router.post("/{reference_id}/storage", response_model=ReferenceStorageResponse)
+@router.post(
+    "/{reference_id}/storage",
+    response_model=ReferenceStorageResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_reference_storage(
     reference_id: int,
     data: ReferenceStorageCreate,
