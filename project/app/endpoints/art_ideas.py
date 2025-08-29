@@ -7,7 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy.sql.base import ExecutableOption
 
-from project.database.models.idea import ArtIdea, ArtIdeaTitle, ArtIdeaQuestion
+from project.database.models.idea import (
+    ArtIdea,
+    ArtIdeaTitle,
+    ArtIdeaQuestion,
+    TitleType,
+)
 from project.database.schema.idea import (
     ArtIdeaCreate,
     ArtIdeaTitleUpdate,
@@ -106,7 +111,7 @@ async def create_idea_title(
     return db_item
 
 
-@router.put(
+@router.patch(
     "/{art_idea_id}/titles/{title_id}",
     response_model=ArtIdeaTitleResponse,
 )
@@ -123,10 +128,47 @@ async def update_idea_title(
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Title not found")
 
     title.title_text = data.title_text
-    title.title_type = data.title_type
     await db.commit()
     await db.refresh(title)
     return title
+
+
+@router.put(
+    "/{art_idea_id}/titles/{title_id}/primary",
+    response_model=ArtIdeaTitleResponse,
+)
+async def set_art_title_to_primary(
+    art_idea_id: int,
+    title_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    ### TODO check art idea type, if this is possible
+
+    new_primary_title = (
+        await db.execute(select(ArtIdeaTitle).filter(ArtIdeaTitle.id == title_id))
+    ).scalar_one_or_none()
+    if not new_primary_title:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Title not found")
+
+    if new_primary_title.title_type == TitleType.PRIMARY:
+        return new_primary_title
+
+    existing_primary_title = (
+        await db.execute(
+            select(ArtIdeaTitle)
+            .filter(ArtIdeaTitle.art_idea_id == art_idea_id)
+            .filter(ArtIdeaTitle.title_type == TitleType.PRIMARY)
+        )
+    ).scalar_one_or_none()
+
+    if existing_primary_title:
+        existing_primary_title.title_type = TitleType.ALTERNATIVE
+
+    new_primary_title.title_type = TitleType.PRIMARY
+
+    await db.commit()
+    await db.refresh(new_primary_title)
+    return new_primary_title
 
 
 @router.post(
