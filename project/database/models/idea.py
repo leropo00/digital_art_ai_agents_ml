@@ -37,7 +37,7 @@ class ArtIdea(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True)
     identifier_name: Mapped[str] = mapped_column(String, unique=True)
     idea_type: Mapped[IdeaType] = mapped_column(
-        SqlEnum(IdeaType, name="idea_type", native_enum=True), nullable=False
+        SqlEnum(IdeaType, name="art_idea_type", native_enum=True), nullable=False
     )
 
     slug: Mapped[str] = mapped_column(String, unique=True)
