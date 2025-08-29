@@ -46,6 +46,10 @@ class ArtIdeaQuestionCreate(BaseModel):
     question_text: str
 
 
+class ArtQuestionTextUpdate(BaseModel):
+    question_text: str
+
+
 class ArtIdeaResponseDetails(ArtIdeaResponse):
     titles: Optional[List[ArtIdeaTitleResponse]] = None
     questions: Optional[List[ArtIdeaQuestionResponse]] = None

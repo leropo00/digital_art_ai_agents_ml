@@ -16,6 +16,7 @@ from project.database.schema.idea import (
     ArtIdeaResponse,
     ArtIdeaTitleResponse,
     ArtIdeaQuestionResponse,
+    ArtQuestionTextUpdate,
 )
 from project.database.session import get_db
 
@@ -79,7 +80,7 @@ async def create_idea(
 
 
 @router.post(
-    "/{art_idea_id}/title",
+    "/{art_idea_id}/titles",
     response_model=ArtIdeaTitleResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -92,7 +93,7 @@ async def create_idea_title(
         await db.execute(select(ArtIdea).filter(ArtIdea.id == art_idea_id))
     ).scalar_one_or_none()
     if not result:
-        raise HTTPException(status_code=404, detail="Idea not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Idea not found")
 
     db_item = ArtIdeaTitle(
         art_idea_id=art_idea_id,
@@ -106,7 +107,7 @@ async def create_idea_title(
 
 
 @router.put(
-    "/{art_idea_id}/title/{title_id}",
+    "/{art_idea_id}/titles/{title_id}",
     response_model=ArtIdeaTitleResponse,
 )
 async def update_idea_title(
@@ -119,7 +120,7 @@ async def update_idea_title(
         await db.execute(select(ArtIdeaTitle).filter(ArtIdeaTitle.id == title_id))
     ).scalar_one_or_none()
     if not title:
-        raise HTTPException(status_code=404, detail="Title not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Title not found")
 
     title.title_text = data.title_text
     title.title_type = data.title_type
@@ -129,7 +130,7 @@ async def update_idea_title(
 
 
 @router.post(
-    "/{art_idea_id}/question",
+    "/{art_idea_id}/questions",
     response_model=ArtIdeaQuestionResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -142,7 +143,7 @@ async def create_idea_questions(
         await db.execute(select(ArtIdea).filter(ArtIdea.id == art_idea_id))
     ).scalar_one_or_none()
     if not result:
-        raise HTTPException(status_code=404, detail="Idea not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Idea not found")
 
     db_item = ArtIdeaQuestion(
         art_idea_id=art_idea_id,
@@ -152,3 +153,34 @@ async def create_idea_questions(
     await db.commit()
     await db.refresh(db_item)
     return db_item
+
+
+"""
+This uses patch, because question solved date will be updated elsewhere
+"""
+
+
+@router.patch(
+    "/{art_idea_id}/questions/{question_id}",
+    response_model=ArtIdeaQuestionResponse,
+)
+async def update_question_text(
+    art_idea_id: int,
+    question_id: int,
+    data: ArtQuestionTextUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    question = (
+        await db.execute(
+            select(ArtIdeaQuestion).filter(ArtIdeaQuestion.id == question_id)
+        )
+    ).scalar_one_or_none()
+    if not question:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail="Question not found"
+        )
+
+    question.question_text = data.question_text
+    await db.commit()
+    await db.refresh(question)
+    return question
