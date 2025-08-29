@@ -31,6 +31,11 @@ class ArtIdeaTitleCreate(BaseModel):
     title_type: TitleType
 
 
+class ArtIdeaTitleUpdate(BaseModel):
+    title_text: str
+    title_type: TitleType
+
+
 class ArtIdeaQuestionResponse(BaseModel):
     id: int
     question_text: str

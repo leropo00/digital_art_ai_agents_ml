@@ -10,6 +10,7 @@ from sqlalchemy.sql.base import ExecutableOption
 from project.database.models.idea import ArtIdea, ArtIdeaTitle, ArtIdeaQuestion
 from project.database.schema.idea import (
     ArtIdeaCreate,
+    ArtIdeaTitleUpdate,
     ArtIdeaTitleCreate,
     ArtIdeaQuestionCreate,
     ArtIdeaResponse,
@@ -102,6 +103,29 @@ async def create_idea_title(
     await db.commit()
     await db.refresh(db_item)
     return db_item
+
+
+@router.put(
+    "/{art_idea_id}/title/{title_id}",
+    response_model=ArtIdeaTitleResponse,
+)
+async def update_idea_title(
+    art_idea_id: int,
+    title_id: int,
+    data: ArtIdeaTitleUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    title = (
+        await db.execute(select(ArtIdeaTitle).filter(ArtIdeaTitle.id == title_id))
+    ).scalar_one_or_none()
+    if not title:
+        raise HTTPException(status_code=404, detail="Title not found")
+
+    title.title_text = data.title_text
+    title.title_type = data.title_type
+    await db.commit()
+    await db.refresh(title)
+    return title
 
 
 @router.post(
