@@ -1,4 +1,3 @@
-from http import HTTPStatus
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -28,7 +27,7 @@ from project.database.session import get_db
 router = APIRouter(
     prefix="/art_ideas",
     tags=["Art Ideas"],
-    responses={HTTPStatus.NOT_FOUND: {"description": "Not found"}},
+    responses={status.HTTP_204_NO_CONTENT: {"description": "Not found"}},
 )
 
 
@@ -57,7 +56,9 @@ async def get_idea(
 
     result = (await db.execute(query)).scalar_one_or_none()
     if not result:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Idea not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Idea not found"
+        )
 
     # TODO for now return without pydantic serialization
     # it seems that pydantic trigger lazy loading of unloaded relationships
@@ -98,7 +99,9 @@ async def create_idea_title(
         await db.execute(select(ArtIdea).filter(ArtIdea.id == art_idea_id))
     ).scalar_one_or_none()
     if not result:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Idea not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Idea not found"
+        )
 
     db_item = ArtIdeaTitle(
         art_idea_id=art_idea_id,
@@ -125,11 +128,35 @@ async def update_idea_title(
         await db.execute(select(ArtIdeaTitle).filter(ArtIdeaTitle.id == title_id))
     ).scalar_one_or_none()
     if not title:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Title not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Title not found"
+        )
 
     title.title_text = data.title_text
     await db.commit()
     await db.refresh(title)
+    return title
+
+
+@router.delete(
+    "/{art_idea_id}/titles/{title_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_idea_title(
+    art_idea_id: int,
+    title_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    title = (
+        await db.execute(select(ArtIdeaTitle).filter(ArtIdeaTitle.id == title_id))
+    ).scalar_one_or_none()
+    if not title:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Title not found"
+        )
+
+    await db.delete(title)
+    await db.commit()
     return title
 
 
@@ -148,7 +175,9 @@ async def set_art_title_to_primary(
         await db.execute(select(ArtIdeaTitle).filter(ArtIdeaTitle.id == title_id))
     ).scalar_one_or_none()
     if not new_primary_title:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Title not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Title not found"
+        )
 
     if new_primary_title.title_type == TitleType.PRIMARY:
         return new_primary_title
@@ -185,7 +214,9 @@ async def create_idea_questions(
         await db.execute(select(ArtIdea).filter(ArtIdea.id == art_idea_id))
     ).scalar_one_or_none()
     if not result:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Idea not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Idea not found"
+        )
 
     db_item = ArtIdeaQuestion(
         art_idea_id=art_idea_id,
@@ -219,7 +250,7 @@ async def update_question_text(
     ).scalar_one_or_none()
     if not question:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail="Question not found"
+            status_code=status.HTTP_204_NO_CONTENT, detail="Question not found"
         )
 
     question.question_text = data.question_text

@@ -33,7 +33,6 @@ class ArtIdeaTitleCreate(BaseModel):
 
 class ArtIdeaTitleUpdate(BaseModel):
     title_text: str
-    title_type: TitleType
 
 
 class ArtIdeaQuestionResponse(BaseModel):

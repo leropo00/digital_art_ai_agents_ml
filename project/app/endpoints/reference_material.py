@@ -1,4 +1,3 @@
-from http import HTTPStatus
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -17,7 +16,7 @@ from project.database.schema.reference import (
 router = APIRouter(
     prefix="/reference_materials",
     tags=["Reference materials"],
-    responses={HTTPStatus.NOT_FOUND: {"description": "Not found"}},
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
 
 
@@ -70,7 +69,7 @@ async def create_reference_storage(
     ).scalar_one_or_none()
     if not result:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail="Reference material not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Reference material not found"
         )
 
     db_item = ReferenceStorage(
