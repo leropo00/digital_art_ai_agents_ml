@@ -20,6 +20,11 @@ class ArtIdeaCreate(BaseModel):
     final_description: Optional[str]
 
 
+class ArtIdeaUpdate(BaseModel):
+    initial_idea: str
+    final_description: str
+
+
 class ArtIdeaTitleResponse(BaseModel):
     id: int
     title_text: str

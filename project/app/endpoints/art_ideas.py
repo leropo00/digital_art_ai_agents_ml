@@ -14,6 +14,7 @@ from project.database.models.idea import (
 )
 from project.database.schema.idea import (
     ArtIdeaCreate,
+    ArtIdeaUpdate,
     ArtIdeaTitleUpdate,
     ArtIdeaTitleCreate,
     ArtIdeaQuestionCreate,
@@ -79,6 +80,29 @@ async def create_idea(
         initial_idea=data.initial_idea,
         final_description=data.final_description,
     )
+    db.add(db_item)
+    await db.commit()
+    await db.refresh(db_item)
+    return db_item
+
+
+@router.patch("/{art_idea_id}", response_model=ArtIdeaResponse)
+async def update_idea(
+    art_idea_id: int,
+    data: ArtIdeaUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    db_item = (
+        await db.execute(select(ArtIdea).filter(ArtIdea.id == art_idea_id))
+    ).scalar_one_or_none()
+    if not db_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Idea not found"
+        )
+
+    db_item.initial_idea = data.initial_idea
+    db_item.final_description = data.final_description
+
     db.add(db_item)
     await db.commit()
     await db.refresh(db_item)
