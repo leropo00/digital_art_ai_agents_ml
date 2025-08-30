@@ -28,7 +28,7 @@ from project.database.session import get_db
 router = APIRouter(
     prefix="/art_ideas",
     tags=["Art Ideas"],
-    responses={status.HTTP_204_NO_CONTENT: {"description": "Not found"}},
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
 
 
