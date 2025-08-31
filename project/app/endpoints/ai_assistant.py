@@ -1,7 +1,7 @@
 import os
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, WebSocket
 from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,6 +17,14 @@ router = APIRouter(
     tags=["AI Assistant"],
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
+
+
+@router.websocket("/chat")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Message text was: {data}")
 
 
 @router.post("/suggest_title")
@@ -42,9 +50,7 @@ async def suggest_title_for_idea(
             },
         ],
     )
-
     print(completion.choices)
-
     return completion.choices
 
 
