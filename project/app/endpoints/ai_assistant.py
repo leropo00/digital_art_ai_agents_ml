@@ -1,12 +1,8 @@
 import os
-from typing import List
+from typing import AsyncGenerator
 
-from fastapi import APIRouter, Depends, HTTPException, status, WebSocket
+from fastapi import APIRouter, status, WebSocket
 from openai import AsyncOpenAI
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-from sqlalchemy.sql.base import ExecutableOption
 
 from project.database.schema.ai_assistant import AiSuggestTitle
 
@@ -18,21 +14,63 @@ router = APIRouter(
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
 
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+@router.websocket("/echo")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    Echo endpoint to test how websockets work
+    """
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"ECHO, send back data: {data}")
+
+
+async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
+    """
+    OpenAI Response
+    """
+    response = await client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a helpful assistant, skilled in explaining "
+                    "complex concepts in simple terms."
+                ),
+            },
+            {
+                "role": "user",
+                "content": message,
+            },
+        ],
+        stream=True,
+    )
+
+    all_content = ""
+    async for chunk in response:
+        content = chunk.choices[0].delta.content
+        if content:
+            all_content += content
+            yield all_content
+
+
 
 @router.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
+        message = await websocket.receive_text()
+        async for text in get_ai_response(message):
+            await websocket.send_text(text)
 
 
 @router.post("/suggest_title")
 async def suggest_title_for_idea(
     # data: AiSuggestTitle,
 ):
-    # async and sync client use same methods
-    client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     completion = await client.chat.completions.create(
         model="o4-mini",
