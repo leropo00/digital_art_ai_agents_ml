@@ -16,8 +16,7 @@ Implemented in Python and FastAPI, this application provides CRUD functionalitie
 
 ## 2.) Frontend:
 https://github.com/leropo00/frontend_digital_art
-
-Frontend used to test the functionalities that the backend provides.
+Frontend implemented in Vue3Js used to test the functionalities that the backend provides.
 
 
 ## 3.) Jupyter Notebooks and Models Training:
